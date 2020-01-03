@@ -1,6 +1,7 @@
 const inquirer = require("inquirer");
 const axios = require("axios");
 const fs = require("fs");
+const convertFactory = require('electron-html-to');
 
 inquirer.prompt([
     {
@@ -30,13 +31,18 @@ inquirer.prompt([
             var profileImage = response.data.avatar_url;
             var name = response.data.name;
             var location = response.data.location;
-            var githubProfile = response.data.url;
+            var githubProfile = response.data.html_url;
             var blog = response.data.blog;
             var bio = response.data.bio;
             var numRepos = response.data.public_repos;
             var numFollowers = response.data.followers;
             var numStars = response.data.public_gists;
             var numFollowing = response.data.following;
+            var textColor = "white";
+
+            if(color === "white" || color.includes("yellow")){
+                textColor = "dark"
+            }
             
             //a variable to contain the html file to be generated
             var htmlFile = 
@@ -47,59 +53,78 @@ inquirer.prompt([
                     <meta charset="UTF-8">
                     <meta name="viewport" content="width=device-width, initial-scale=1.0">
                     <title>${name} Profile</title>
-                    <link rel="stylesheet" href="assets/css/reset.css">
                     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
-                    <link rel="stylesheet" href="assets/css/style.css">
                     <script defer src="https://use.fontawesome.com/releases/v5.3.1/js/all.js"></script>
                 </head>
-                <body>
+                <body class="bg-secondary">
                     <style>
+                        html{
+                            height: 100%;
+                        }
+                        
+                        body{
+                            min-height: 100%;
+                        }
+                        
                         .card{
                             background-color: ${color};
                         }
+
+                        #profile-img{
+                            width: 20%;
+                        }
+                        
+                        .info-link{
+                            font-size: x-large;
+                        }
+                        
+                        #bio{
+                            font-size: xx-large;
+                        }
                     </style>
+
                     <div class="container">
-                        <div class="card text-center text-white mt-3">
+                        <div class="card text-center text-${textColor} mt-3">
                             <div class="card-body">
                 
                                 <img id="profile-img" src="${profileImage}" alt="Profile Image">
                 
                                 <h1 class="mt-3">Hello, My name is ${name}</h1>
                 
-                                <a class="info-link text-white" href="https://www.google.com/maps/place/${location}" target="#blank"><i class="fas fa-map-marker-alt"></i> San Francisco, CA</a>
-                                <a class="info-link text-white ml-3" href="${githubProfile}"><i class="fab fa-github"></i> GitHub</a>
-                                <a class="info-link text-white ml-3" href="${blog}"><i class="fas fa-rss"></i> Blog</a>
+                                <a class="info-link text-${textColor}" href="https://www.google.com/maps/place/${location}" target="#blank"><i class="fas fa-map-marker-alt"></i> San Francisco, CA</a>
+                                <a class="info-link text-${textColor} ml-3" href="${githubProfile}" target="#blank"><i class="fab fa-github"></i> GitHub</a>
+                                <a class="info-link text-${textColor} ml-3" href="${blog}" target="#blank"><i class="fas fa-rss"></i> Blog</a>
                             </div>
                         </div>
                 
-                        <p class="text-center mt-3" id="bio">${bio}</p>
+                        <p class="text-center text-white mt-3" id="bio">${bio}</p>
                 
                         <div class="container">
                             <div class="row justify-content-around mb-3">
-                                <div class="card text-center text-white col-12 col-md-5 mb-3">
+                                <div class="card text-center text-${textColor} col-12 col-md-5 mb-3">
                                     <div class="card-body">
                                         <h2>Public Repositories</h2>
                                         <h2>${numRepos}</h2>
                                     </div>
                                 </div>
-                                <div class="card text-center text-white col-12 col-md-5 mb-3">
+                                <div class="card text-center text-${textColor} col-12 col-md-5 mb-3">
                                     <div class="card-body">
                                         <h2>Followers</h2>
-                                        h2>${numFollowers}</h2>
+                                       <h2>${numFollowers}</h2>
                                     </div>
                                 </div>
                             </div>
                             <div class="row justify-content-around">
-                                <div class="card text-center text-white col-12 col-md-5 mb-3">
+                                <div class="card text-center text-${textColor} col-12 col-md-5 mb-3">
                                     <div class="card-body">
-                                        <h2>Github Stars</h2>
-                                        h2>${numStars}</h2>
+                                        <h2>GitHub Stars</h2>
+                                        <h2>${numStars}</h2>
                                     </div>
                                 </div>
-                                <div class="card text-center text-white col-12 col-md-5 mb-3">
+                                <div class="card text-center text-${textColor} col-12 col-md-5 mb-3">
                                     <div class="card-body">
                                         <h2>Following</h2>
-                                        h2>${numFollowing}</h2>
+                                        <h2>${numFollowing}</h2>
                                     </div>
                                 </div>
                             </div>
@@ -112,6 +137,26 @@ inquirer.prompt([
                 </body>
                 </html>                
                 `
-                
+                // var conversion = convertFactory({
+                //     converterPath: convertFactory.converters.PDF,
+                //     allowLocalFilesAccess: true
+                // });
+                   
+                // conversion({ html: htmlFile }, function(err, result) {
+                //     if (err) {
+                //       return console.error(err);
+                //     }
+                //     result.stream.pipe(fs.createWriteStream(`./${username}-profile.pdf`));
+                //     conversion.kill();
+                // });
+
+                fs.writeFile(`${username}-profile.html`, htmlFile, "utf8", function(error){
+                    if(error){
+                        throw error;
+                    }
+
+                    console.log("Successfully wrote html file!")
+                })
+
         });
 });
