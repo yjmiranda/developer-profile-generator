@@ -16,12 +16,9 @@
     "url": "https://github.com/yjmiranda/developer-profile-generator/issues"
   },
   "homepage": "https://github.com/yjmiranda/developer-profile-generator#readme",
-  "devDependencies": {
-    "electron": "^7.1.7"
-  },
   "dependencies": {
     "axios": "^0.19.0",
-    "electron-html-to": "^2.6.0",
+    "html-pdf": "^2.2.0",
     "inquirer": "^7.0.1"
   }
 }

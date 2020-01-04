@@ -1,7 +1,7 @@
 const inquirer = require("inquirer");
 const axios = require("axios");
 const fs = require("fs");
-const convertFactory = require('electron-html-to');
+var pdf = require('html-pdf');
 
 inquirer.prompt([
     {
@@ -70,6 +70,12 @@ inquirer.prompt([
                             background-color: ${color};
                         }
 
+                        .info-card{
+                            display: block;
+                            width: 49%;
+                            float: left;
+                        }
+
                         #profile-img{
                             width: 20%;
                         }
@@ -99,36 +105,34 @@ inquirer.prompt([
                 
                         <p class="text-center text-white mt-3" id="bio">${bio}</p>
                 
-                        <div class="container">
-                            <div class="row justify-content-around mb-3">
-                                <div class="card text-center text-${textColor} col-12 col-md-5 mb-3">
-                                    <div class="card-body">
-                                        <h2>Public Repositories</h2>
-                                        <h2>${numRepos}</h2>
-                                    </div>
-                                </div>
-                                <div class="card text-center text-${textColor} col-12 col-md-5 mb-3">
-                                    <div class="card-body">
-                                        <h2>Followers</h2>
-                                       <h2>${numFollowers}</h2>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="row justify-content-around">
-                                <div class="card text-center text-${textColor} col-12 col-md-5 mb-3">
-                                    <div class="card-body">
-                                        <h2>GitHub Stars</h2>
-                                        <h2>${numStars}</h2>
-                                    </div>
-                                </div>
-                                <div class="card text-center text-${textColor} col-12 col-md-5 mb-3">
-                                    <div class="card-body">
-                                        <h2>Following</h2>
-                                        <h2>${numFollowing}</h2>
-                                    </div>
-                                </div>
+                        <div class="info-card card text-center text-${textColor} mb-3">
+                            <div class="card-body">
+                                <h2>Public Repositories</h2>
+                                <h2>${numRepos}</h2>
                             </div>
                         </div>
+                    
+                        <div class="info-card card text-center text-${textColor} mb-3 ml-3">
+                            <div class="card-body">
+                                <h2>Followers</h2>
+                                <h2>${numFollowers}</h2>
+                            </div>
+                        </div>
+                
+                        <div class="info-card card text-center text-${textColor} mb-3">
+                            <div class="card-body">
+                                <h2>GitHub Stars</h2>
+                                <h2>${numStars}</h2>
+                            </div>
+                        </div>
+                        
+                        <div class="info-card card text-center text-${textColor} mb-3 ml-3">
+                            <div class="card-body">
+                                <h2>Following</h2>
+                                <h2>${numFollowing}</h2>
+                            </div>
+                        </div>
+                     
                     </div>
                 
                     <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
@@ -136,27 +140,26 @@ inquirer.prompt([
                     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
                 </body>
                 </html>                
-                `
-                // var conversion = convertFactory({
-                //     converterPath: convertFactory.converters.PDF,
-                //     allowLocalFilesAccess: true
-                // });
-                   
-                // conversion({ html: htmlFile }, function(err, result) {
-                //     if (err) {
-                //       return console.error(err);
+                `;
+
+                var options = { 
+                    format: "A4",
+                    orientation: "portrait",
+                    type: "pdf"
+                };
+ 
+                pdf.create(htmlFile, options).toFile(`./${username}-profile.pdf`, function(err, res) {
+                  if (err) return console.log(err);
+                  console.log(res); // { filename: '/app/businesscard.pdf'}
+                });
+
+                // fs.writeFile(`${username}-profile.html`, htmlFile, "utf8", function(error){
+                //     if(error){
+                //         throw error;
                 //     }
-                //     result.stream.pipe(fs.createWriteStream(`./${username}-profile.pdf`));
-                //     conversion.kill();
-                // });
 
-                fs.writeFile(`${username}-profile.html`, htmlFile, "utf8", function(error){
-                    if(error){
-                        throw error;
-                    }
-
-                    console.log("Successfully wrote html file!")
-                })
+                //     console.log("Successfully wrote html file!")
+                // })
 
         });
 });
