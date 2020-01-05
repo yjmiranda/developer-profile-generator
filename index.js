@@ -150,16 +150,9 @@ inquirer.prompt([
  
                 pdf.create(htmlFile, options).toFile(`./${username}-profile.pdf`, function(err, res) {
                   if (err) return console.log(err);
-                  console.log(res); // { filename: '/app/businesscard.pdf'}
+                  console.log(res);
+                  
                 });
-
-                // fs.writeFile(`${username}-profile.html`, htmlFile, "utf8", function(error){
-                //     if(error){
-                //         throw error;
-                //     }
-
-                //     console.log("Successfully wrote html file!")
-                // })
 
         });
 });
